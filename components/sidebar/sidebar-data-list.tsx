@@ -17,10 +17,6 @@ import { ChatItem } from "./items/chat/chat-item"
 import { CollectionItem } from "./items/collections/collection-item"
 import { FileItem } from "./items/files/file-item"
 import { Folder } from "./items/folders/folder-item"
-import { ModelItem } from "./items/models/model-item"
-import { PresetItem } from "./items/presets/preset-item"
-import { PromptItem } from "./items/prompts/prompt-item"
-import { ToolItem } from "./items/tools/tool-item"
 
 interface SidebarDataListProps {
   contentType: ContentType
@@ -57,36 +53,36 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
       case "chats":
         return <ChatItem key={item.id} chat={item as Tables<"chats">} />
 
-      case "presets":
-        return <PresetItem key={item.id} preset={item as Tables<"presets">} />
-
-      case "prompts":
-        return <PromptItem key={item.id} prompt={item as Tables<"prompts">} />
-
-      case "files":
-        return <FileItem key={item.id} file={item as Tables<"files">} />
-
-      case "collections":
-        return (
-          <CollectionItem
-            key={item.id}
-            collection={item as Tables<"collections">}
-          />
-        )
-
-      case "assistants":
-        return (
-          <AssistantItem
-            key={item.id}
-            assistant={item as Tables<"assistants">}
-          />
-        )
-
-      case "tools":
-        return <ToolItem key={item.id} tool={item as Tables<"tools">} />
-
-      case "models":
-        return <ModelItem key={item.id} model={item as Tables<"models">} />
+      // case "presets":
+      //   return <PresetItem key={item.id} preset={item as Tables<"presets">} />
+      //
+      // case "prompts":
+      //   return <PromptItem key={item.id} prompt={item as Tables<"prompts">} />
+      //
+      // case "files":
+      //   return <FileItem key={item.id} file={item as Tables<"files">} />
+      //
+      // case "collections":
+      //   return (
+      //     <CollectionItem
+      //       key={item.id}
+      //       collection={item as Tables<"collections">}
+      //     />
+      //   )
+      //
+      // case "assistants":
+      //   return (
+      //     <AssistantItem
+      //       key={item.id}
+      //       assistant={item as Tables<"assistants">}
+      //     />
+      //   )
+      //
+      // case "tools":
+      //   return <ToolItem key={item.id} tool={item as Tables<"tools">} />
+      //
+      // case "models":
+      //   return <ModelItem key={item.id} model={item as Tables<"models">} />
 
       default:
         return null
@@ -142,8 +138,17 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
     tools: updateTool,
     models: updateModel
   }
+  type ContentType =
+    | "chats"
+    | "presets"
+    | "prompts"
+    | "files"
+    | "collections"
+    | "assistants"
+    | "tools"
+    | "models"
 
-  const stateUpdateFunctions = {
+  const stateUpdateFunctions: { [key in ContentType]: (value: any) => void } = {
     chats: setChats,
     presets: setPresets,
     prompts: setPrompts,
@@ -159,8 +164,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
 
     if (!item) return null
 
-    const updateFunction = updateFunctions[contentType]
-    const setStateFunction = stateUpdateFunctions[contentType]
+    const updateFunction = updateFunctions[contentType as ContentType]
+    const setStateFunction = stateUpdateFunctions[contentType as ContentType]
 
     if (!updateFunction || !setStateFunction) return
 
@@ -253,7 +258,7 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
                       draggable
                       onDragStart={e => handleDragStart(e, item.id)}
                     >
-                      {getDataListComponent(contentType, item)}
+                      {getDataListComponent(contentType as ContentType, item)}
                     </div>
                   ))}
               </Folder>
@@ -322,7 +327,7 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
                       draggable
                       onDragStart={e => handleDragStart(e, item.id)}
                     >
-                      {getDataListComponent(contentType, item)}
+                      {getDataListComponent(contentType as ContentType, item)}
                     </div>
                   )
                 })}

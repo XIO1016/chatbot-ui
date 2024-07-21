@@ -8,10 +8,7 @@ import { Button } from "../ui/button"
 import { CreateAssistant } from "./items/assistants/create-assistant"
 import { CreateCollection } from "./items/collections/create-collection"
 import { CreateFile } from "./items/files/create-file"
-import { CreateModel } from "./items/models/create-model"
-import { CreatePreset } from "./items/presets/create-preset"
 import { CreatePrompt } from "./items/prompts/create-prompt"
-import { CreateTool } from "./items/tools/create-tool"
 
 interface SidebarCreateButtonsProps {
   contentType: ContentType
@@ -117,13 +114,6 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
         />
       )}
 
-      {isCreatingPreset && (
-        <CreatePreset
-          isOpen={isCreatingPreset}
-          onOpenChange={setIsCreatingPreset}
-        />
-      )}
-
       {isCreatingFile && (
         <CreateFile isOpen={isCreatingFile} onOpenChange={setIsCreatingFile} />
       )}
@@ -139,17 +129,6 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
         <CreateAssistant
           isOpen={isCreatingAssistant}
           onOpenChange={setIsCreatingAssistant}
-        />
-      )}
-
-      {isCreatingTool && (
-        <CreateTool isOpen={isCreatingTool} onOpenChange={setIsCreatingTool} />
-      )}
-
-      {isCreatingModel && (
-        <CreateModel
-          isOpen={isCreatingModel}
-          onOpenChange={setIsCreatingModel}
         />
       )}
     </div>

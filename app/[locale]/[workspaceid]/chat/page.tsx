@@ -32,9 +32,9 @@ export default function ChatPage() {
             <Brand theme={theme === "dark" ? "dark" : "light"} />
           </div>
 
-          <div className="absolute left-2 top-2">
-            <QuickSettings />
-          </div>
+          {/*<div className="absolute left-2 top-2">*/}
+          {/*  <QuickSettings />*/}
+          {/*</div>*/}
 
           <div className="absolute right-2 top-2">
             <ChatSettings />
@@ -42,13 +42,13 @@ export default function ChatPage() {
 
           <div className="flex grow flex-col items-center justify-center" />
 
-          <div className="w-full min-w-[300px] items-end px-2 pb-3 pt-0 sm:w-[600px] sm:pb-8 sm:pt-5 md:w-[700px] lg:w-[700px] xl:w-[800px]">
+          <div className="w-full min-w-[250px] items-end px-2 pb-3 pt-0 sm:w-[550px] sm:pb-8 sm:pt-5 md:w-[650px] lg:w-[650px] xl:w-[750px]">
             <ChatInput />
           </div>
 
-          <div className="absolute bottom-2 right-2 hidden md:block lg:bottom-4 lg:right-4">
-            <ChatHelp />
-          </div>
+          {/*<div className="absolute bottom-2 right-2 hidden md:block lg:bottom-4 lg:right-4">*/}
+          {/*  <ChatHelp />*/}
+          {/*</div>*/}
         </div>
       ) : (
         <ChatUI />

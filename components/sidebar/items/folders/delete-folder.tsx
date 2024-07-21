@@ -41,8 +41,7 @@ export const DeleteFolder: FC<DeleteFolderProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const [showFolderDialog, setShowFolderDialog] = useState(false)
-
-  const stateUpdateFunctions = {
+  const stateUpdateFunctions: { [key in ContentType]: (value: any) => void } = {
     chats: setChats,
     presets: setPresets,
     prompts: setPrompts,

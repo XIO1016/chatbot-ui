@@ -66,7 +66,7 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       setIsAtBottom(true)
     }
 
-    if (params.chatid) {
+    if (!params?.chatid) {
       fetchData().then(() => {
         handleFocusChatInput()
         setLoading(false)
@@ -77,6 +77,10 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
   }, [])
 
   const fetchMessages = async () => {
+    if (!params?.chatid) {
+      // Handle the case where params or params.chatid is null
+      return
+    }
     const fetchedMessages = await getMessagesByChatId(params.chatid as string)
 
     const imagePromises: Promise<MessageImage>[] = fetchedMessages.flatMap(
@@ -122,6 +126,10 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
     const uniqueFileItems = messageFileItems.flatMap(item => item.file_items)
     setChatFileItems(uniqueFileItems)
 
+    if (!params?.chatid) {
+      // Handle the case where params or params.chatid is null
+      return
+    }
     const chatFiles = await getChatFilesByChatId(params.chatid as string)
 
     setChatFiles(
@@ -149,8 +157,11 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
 
     setChatMessages(fetchedChatMessages)
   }
-
   const fetchChat = async () => {
+    if (!params || !params.chatid) {
+      // Handle the case where params or params.chatid is null
+      return
+    }
     const chat = await getChatById(params.chatid as string)
     if (!chat) return
 
@@ -218,13 +229,13 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="relative w-full min-w-[300px] items-end px-2 pb-3 pt-0 sm:w-[600px] sm:pb-8 sm:pt-5 md:w-[700px] lg:w-[700px] xl:w-[800px]">
+      <div className="relative w-full min-w-[200px] items-end px-2 pb-3 pt-0 sm:w-[500px] sm:pb-8 sm:pt-5 md:w-[600px] lg:w-[600px] xl:w-[700px]">
         <ChatInput />
       </div>
 
-      <div className="absolute bottom-2 right-2 hidden md:block lg:bottom-4 lg:right-4">
-        <ChatHelp />
-      </div>
+      {/*<div className="absolute bottom-2 right-2 hidden md:block lg:bottom-4 lg:right-4">*/}
+      {/*  <ChatHelp />*/}
+      {/*</div>*/}
     </div>
   )
 }

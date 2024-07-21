@@ -19,6 +19,11 @@ import { LLMID } from "@/types"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ReactNode, useContext, useEffect, useState } from "react"
 import Loading from "../loading"
+import Emailbar from "@/components/email"
+import HomeContext from "@/context/homecontext"
+import { useCreateReducer } from "@/lib/hooks/useCreateReducer"
+import { HomeInitialState, initialState } from "@/context/homestate"
+import { toolEmail } from "@/types/tools"
 
 interface WorkspaceLayoutProps {
   children: ReactNode
@@ -29,8 +34,10 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
   const params = useParams()
   const searchParams = useSearchParams()
-  const workspaceId = params.workspaceid as string
-
+  const workspaceId = params?.workspaceid as string
+  const contextValue = useCreateReducer<HomeInitialState>({
+    initialState
+  })
   const {
     setChatSettings,
     setAssistants,
@@ -157,12 +164,12 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setModels(modelData.models)
 
     setChatSettings({
-      model: (searchParams.get("model") ||
+      model: (searchParams?.get("model") ||
         workspace?.default_model ||
         "gpt-4-1106-preview") as LLMID,
       prompt:
         workspace?.default_prompt ||
-        "You are a friendly, helpful AI assistant.",
+        "You are helpful assistant for Korean transaction intermediary. Match sellers and buyers by checking the current inventory of sellers and the purchase requests from buyers. Preferred language is Korean. Try to make response with Korean language excepts inquiry emails. Inquiry emails needs to write in seller's preferred language. e.g. English. Email contents should be confirm by user before send. User using premium account. User name is 'Dong-Hyun Kim' and He is working for 'GTN service company.' He's contant info is 'gtnservice4@gmail.com'",
       temperature: workspace?.default_temperature || 0.5,
       contextLength: workspace?.default_context_length || 4096,
       includeProfileContext: workspace?.include_profile_context || true,
@@ -179,5 +186,19 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     return <Loading />
   }
 
-  return <Dashboard>{children}</Dashboard>
+  const {
+    state: {},
+    dispatch
+  } = contextValue
+
+  const handleUpdateEmail = (email: toolEmail) => {
+    dispatch({ field: "email", value: email })
+  }
+
+  return (
+    <HomeContext.Provider value={{ ...contextValue, handleUpdateEmail }}>
+      <Dashboard>{children}</Dashboard>
+      {/*<Emailbar />*/}
+    </HomeContext.Provider>
+  )
 }

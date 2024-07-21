@@ -9,11 +9,19 @@ import { cn } from "@/lib/utils"
 import { ContentType } from "@/types"
 import { IconChevronCompactRight } from "@tabler/icons-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { FC, useState } from "react"
+import { FC, useContext, useState } from "react"
 import { useSelectFileHandler } from "../chat/chat-hooks/use-select-file-handler"
 import { CommandK } from "../utility/command-k"
+import Emailbar from "@/components/email"
+import HomeContext from "@/context/homecontext"
+import { useCreateReducer } from "@/lib/hooks/useCreateReducer"
+import {
+  EmailbarInitialState,
+  initialState
+} from "@/components/email/Emailbar.state"
 
-export const SIDEBAR_WIDTH = 350
+export const SIDEBAR_WIDTH = 300
+export const EMAILBAR_WIDTH = 300
 
 interface DashboardProps {
   children: React.ReactNode
@@ -67,6 +75,25 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
     localStorage.setItem("showSidebar", String(!showSidebar))
   }
 
+  const emailBarContextValue = useCreateReducer<EmailbarInitialState>({
+    initialState
+  })
+  const {
+    state: { emails, showEmailbar },
+    dispatch: homeDispatch,
+    handleCreateFolder
+  } = useContext(HomeContext)
+
+  const {
+    state: { searchTerm, filteredEmails },
+    dispatch: emailDispatch
+  } = emailBarContextValue
+
+  const handleToggleEmailbar = () => {
+    homeDispatch({ field: "showEmailbar", value: !showEmailbar })
+    localStorage.setItem("showEmailbar", JSON.stringify(!showEmailbar))
+  }
+
   return (
     <div className="flex size-full">
       <CommandK />
@@ -76,7 +103,6 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           "duration-200 dark:border-none " + (showSidebar ? "border-r-2" : "")
         )}
         style={{
-          // Sidebar
           minWidth: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
           maxWidth: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
           width: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px"
@@ -99,7 +125,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
       </div>
 
       <div
-        className="bg-muted/50 relative flex w-screen min-w-[90%] grow flex-col sm:min-w-fit"
+        className="bg-muted/50 relative flex min-w-0 grow flex-col"
         onDrop={onFileDrop}
         onDragOver={onDragOver}
         onDragEnter={handleDragEnter}
@@ -118,7 +144,6 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
             "absolute left-[4px] top-[50%] z-10 size-[32px] cursor-pointer"
           )}
           style={{
-            // marginLeft: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
             transform: showSidebar ? "rotate(180deg)" : "rotate(0deg)"
           }}
           variant="ghost"
@@ -127,7 +152,31 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
         >
           <IconChevronCompactRight size={24} />
         </Button>
+        <Button
+          className={cn(
+            "absolute right-[4px] top-[50%] z-10 size-[32px] cursor-pointer"
+          )}
+          style={{
+            transform: showEmailbar ? "rotate(0deg)" : "rotate(180deg)"
+          }}
+          variant="ghost"
+          size="icon"
+          onClick={handleToggleEmailbar}
+        >
+          <IconChevronCompactRight size={24} />
+        </Button>
       </div>
+
+      <Emailbar
+        className={cn(
+          "duration-200 dark:border-none " + (showEmailbar ? "border-l-2" : "")
+        )}
+        style={{
+          minWidth: showEmailbar ? `${EMAILBAR_WIDTH}px` : "0px",
+          maxWidth: showEmailbar ? `${EMAILBAR_WIDTH}px` : "0px",
+          width: showEmailbar ? `${EMAILBAR_WIDTH}px` : "0px"
+        }}
+      />
     </div>
   )
 }

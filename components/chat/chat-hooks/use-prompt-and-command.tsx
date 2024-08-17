@@ -20,6 +20,7 @@ export const usePromptAndCommand = () => {
     setHashtagCommand,
     setUseRetrieval,
     setToolCommand,
+    toolCommand,
     setIsToolPickerOpen,
     setSelectedTools,
     setAtCommand,
@@ -49,7 +50,7 @@ export const usePromptAndCommand = () => {
       setIsFilePickerOpen(true)
       setHashtagCommand(hashtagMatch[1])
     } else if (toolMatch) {
-      setIsToolPickerOpen(true)
+      // setIsToolPickerOpen(true)
       setToolCommand(toolMatch[1])
     } else {
       setIsPromptPickerOpen(false)
@@ -58,7 +59,7 @@ export const usePromptAndCommand = () => {
       setIsAssistantPickerOpen(false)
       setSlashCommand("")
       setHashtagCommand("")
-      setToolCommand("")
+      if (!toolCommand) setToolCommand("")
       setAtCommand("")
     }
 

@@ -18,6 +18,7 @@ import { Email } from "@/types/email"
 // import PromptbarContext from '../PromptBar.context';
 import EmailbarContext from "../EmailBar.context"
 import { EmailModal } from "./EmailModal"
+import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 //import { PromptModal } from './PromptModal';
 
 interface Props {
@@ -75,6 +76,20 @@ export const EmailComponent = ({ email }: Props) => {
   //     setIsRenaming(false);
   //   }
   // }, [isRenaming, isDeleting]);
+  const {
+    chatInputRef,
+    handleSendMessage,
+    handleEmailChat,
+    handleStopMessage,
+    handleFocusChatInput,
+    handleNewChat
+  } = useChatHandler()
+
+  const onChatWithGTN = () => {
+    console.log("Chat with GTN")
+    setShowModal(false)
+    handleEmailChat(email, [], false)
+  }
 
   return (
     <div className="relative flex items-center">
@@ -123,6 +138,7 @@ export const EmailComponent = ({ email }: Props) => {
         <EmailModal
           email={email}
           onClose={() => setShowModal(false)}
+          onChatWithGTN={onChatWithGTN}
           //          onUpdatePrompt={handleUpdate}
         />
       )}

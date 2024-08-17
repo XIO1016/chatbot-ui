@@ -140,6 +140,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
     const chats = await getChatsByWorkspaceId(workspaceId)
     setChats(chats)
+    console.log("chats", chats)
 
     const collectionData =
       await getCollectionWorkspacesByWorkspaceId(workspaceId)

@@ -25,7 +25,7 @@ export const ChatCommandInput: FC<ChatCommandInputProps> = ({}) => {
 
   return (
     <>
-      <PromptPicker />
+      {/*<PromptPicker />*/}
 
       <FilePicker
         isOpen={isFilePickerOpen}
@@ -40,9 +40,9 @@ export const ChatCommandInput: FC<ChatCommandInputProps> = ({}) => {
         isFocused={focusFile}
       />
 
-      <ToolPicker />
+      {/*<ToolPicker />*/}
 
-      <AssistantPicker />
+      {/*<AssistantPicker />*/}
     </>
   )
 }

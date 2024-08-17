@@ -55,7 +55,7 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
 
         <TextareaAutosize
           className="bg-background border-input border-2"
-          placeholder="You are a helpful AI assistant."
+          placeholder="You are helpful assistant for Korean transaction intermediary. Match sellers and buyers by checking the current inventory of sellers and the purchase requests from buyers. Preferred language is Korean. Try to make response with Korean language excepts inquiry emails. Inquiry emails needs to write in seller's preferred language. e.g. English. Email contents should be confirm by user before send. User using premium account. User name is 'Dong-Hyun Kim' and He is working for 'GTN service company.' He's contant info is 'gtnservice4@gmail.com'"
           onValueChange={prompt => {
             onChangeChatSettings({ ...chatSettings, prompt })
           }}

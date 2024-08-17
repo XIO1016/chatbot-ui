@@ -44,6 +44,3 @@ sw.js
 sw.js.map
 workbox-*.js
 workbox-*.js.map
-
-# supabase
-/supabase/migrations/20240108234540_setup.sql

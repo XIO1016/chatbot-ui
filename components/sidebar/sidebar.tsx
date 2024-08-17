@@ -7,6 +7,12 @@ import { TabsContent } from "../ui/tabs"
 import { WorkspaceSwitcher } from "../utility/workspace-switcher"
 import { WorkspaceSettings } from "../workspace/workspace-settings"
 import { SidebarContent } from "./sidebar-content"
+import { Button } from "@/components/ui/button"
+import { deleteAllChat } from "@/db/chats"
+import { getHomeWorkspaceByUserId } from "@/db/workspaces"
+import { useParams, useRouter } from "next/navigation"
+import DeleteButton from "@/components/ui/delete-chats"
+import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 
 interface SidebarProps {
   contentType: ContentType
@@ -23,8 +29,11 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
     collections,
     assistants,
     tools,
-    models
+    models,
+    setChats
   } = useContext(ChatbotUIContext)
+
+  const { handleNewChat } = useChatHandler()
 
   const chatFolders = folders.filter(folder => folder.type === "chats")
   const presetFolders = folders.filter(folder => folder.type === "presets")
@@ -54,9 +63,9 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
       className="m-0 w-full space-y-2"
       style={{
         // Sidebar - SidebarSwitcher
-        minWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px",
-        maxWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px",
-        width: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px"
+        minWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px )` : "0px",
+        maxWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px )` : "0px",
+        width: showSidebar ? `calc(${SIDEBAR_WIDTH}px)` : "0px"
       }}
       value={contentType}
     >
@@ -105,6 +114,15 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
               return null
           }
         })()}
+
+        <div className="mt-auto">
+          <DeleteButton
+            routerPush={() => {
+              setChats([])
+              handleNewChat()
+            }}
+          />
+        </div>
       </div>
     </TabsContent>
   )

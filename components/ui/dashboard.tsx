@@ -20,7 +20,7 @@ import {
   initialState
 } from "@/components/email/Emailbar.state"
 
-export const SIDEBAR_WIDTH = 300
+export const SIDEBAR_WIDTH = 260
 export const EMAILBAR_WIDTH = 300
 
 interface DashboardProps {
@@ -33,7 +33,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const tabValue = searchParams.get("tab") || "chats"
+  const tabValue = searchParams?.get("tab") || "chats"
 
   const { handleSelectDeviceFile } = useSelectFileHandler()
 
@@ -80,8 +80,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
   })
   const {
     state: { emails, showEmailbar },
-    dispatch: homeDispatch,
-    handleCreateFolder
+    dispatch: homeDispatch
   } = useContext(HomeContext)
 
   const {
@@ -117,7 +116,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
               router.replace(`${pathname}?tab=${tabValue}`)
             }}
           >
-            <SidebarSwitcher onContentTypeChange={setContentType} />
+            {/*<SidebarSwitcher onContentTypeChange={setContentType} />*/}
 
             <Sidebar contentType={contentType} showSidebar={showSidebar} />
           </Tabs>

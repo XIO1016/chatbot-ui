@@ -28,6 +28,7 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
 
   const {
     setChatMessages,
+    chatMessages,
     selectedChat,
     setSelectedChat,
     setChatSettings,
@@ -66,23 +67,25 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       setIsAtBottom(true)
     }
 
-    if (!params?.chatid) {
+    if (params?.chatid) {
       fetchData().then(() => {
         handleFocusChatInput()
         setLoading(false)
       })
     } else {
+      console.log("chatid exists")
       setLoading(false)
     }
   }, [])
 
   const fetchMessages = async () => {
+    console.log("params", params)
     if (!params?.chatid) {
       // Handle the case where params or params.chatid is null
       return
     }
     const fetchedMessages = await getMessagesByChatId(params.chatid as string)
-
+    console.log("fetchedMessages", fetchedMessages)
     const imagePromises: Promise<MessageImage>[] = fetchedMessages.flatMap(
       message =>
         message.image_paths

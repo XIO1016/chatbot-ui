@@ -1,37 +1,9 @@
 INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, invited_at, confirmation_token, confirmation_sent_at, recovery_token, recovery_sent_at, email_change_token_new, email_change, email_change_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, is_super_admin, created_at, updated_at, phone, phone_confirmed_at, phone_change, phone_change_token, phone_change_sent_at, email_change_token_current, email_change_confirm_status, banned_until, reauthentication_token, reauthentication_sent_at, is_sso_user) VALUES
 ('00000000-0000-0000-0000-000000000000', 'e9fc7e46-a8a5-4fd4-8ba7-af485013e6fa', 'authenticated', 'authenticated', 'test@test.com', crypt('password', gen_salt('bf')), '2023-02-18 23:31:13.017218+00', NULL, '', '2023-02-18 23:31:12.757017+00', '', NULL, '', '', NULL, '2023-02-18 23:31:13.01781+00', '{"provider": "email", "providers": ["email"]}', '{}', NULL, '2023-02-18 23:31:12.752281+00', '2023-02-18 23:31:13.019418+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, 'f');
 
--- -- Start data for workspaces 
--- INSERT INTO workspaces (user_id, name, description, default_context_length, default_model, default_prompt, default_temperature, include_profile_context, include_workspace_instructions, instructions, is_home, sharing, embeddings_provider) VALUES 
--- ('e9fc7e46-a8a5-4fd4-8ba7-af485013e6fa', 'Workspace 1', 'This is for testing.', 4000, 'gpt-4-turbo-preview', 'You are an assistant.', 0.5, true, true, 'These are the instructions.', false, 'private', 'openai');
-DO $$
-DECLARE
-    default_prompt TEXT := 'You are a helpful assistant for Korean transaction intermediary. '
-                          || 'Match sellers and buyers by checking the current inventory of sellers '
-                          || 'and the purchase requests from buyers. Preferred language is Korean. '
-                          || 'Try to make response with Korean language except inquiry emails. '
-                          || 'Inquiry emails needs to write in seller''s preferred language. e.g. English. '
-                          || 'Email contents should be confirm by user before send. User using premium account. '
-                          || 'User name is ''Dong-Hyun Kim'' and He is working for ''GTN service company.'' '
-                          || 'His contact info is ''gtnservice4@gmail.com'';
-BEGIN
-    INSERT INTO public.workspaces(user_id, is_home, name, default_context_length, default_model, default_prompt,
-                                  default_temperature, description, embeddings_provider, include_profile_context,
-                                  include_workspace_instructions, instructions, default_email)
-    VALUES ('e9fc7e46-a8a5-4fd4-8ba7-af485013e6fa',
-            TRUE,
-            'Home',
-            4096,
-            'gpt-4-1106-preview',
-            default_prompt,
-            0.5,
-            'My home workspace.',
-            'openai',
-            TRUE,
-            TRUE,
-            '',
-            'user@example.com');  -- default_email에 값을 설정합니다.
-END $$;
+-- Start data for workspaces 
+INSERT INTO workspaces (user_id, name, description, default_context_length, default_model, default_prompt, default_temperature, include_profile_context, include_workspace_instructions, instructions, is_home, sharing, embeddings_provider) VALUES 
+('e9fc7e46-a8a5-4fd4-8ba7-af485013e6fa', 'Workspace 1', 'This is for testing.', 4000, 'gpt-4-turbo-preview', 'You are an assistant.', 0.5, true, true, 'These are the instructions.', false, 'private', 'openai');
 
 -- Get workspace ids
 DO $$
@@ -100,14 +72,7 @@ BEGIN
 
   -- Start data for chats 
   INSERT INTO chats (user_id, workspace_id, name, model, prompt, temperature, context_length, include_profile_context, include_workspace_instructions, embeddings_provider) VALUES 
-  ('e9fc7e46-a8a5-4fd4-8ba7-af485013e6fa', workspace1_id, 'Chat 1', 'gpt-4-turbo-preview', 'You are a helpful assistant for Korean transaction intermediary. '
-        || 'Match sellers and buyers by checking the current inventory of sellers '
-        || 'and the purchase requests from buyers. Preferred language is Korean. '
-        || 'Try to make response with Korean language except inquiry emails. '
-        || 'Inquiry emails needs to write in seller''s preferred language. e.g. English. '
-        || 'Email contents should be confirm by user before send. User using premium account. '
-        || 'User name is ''Dong-Hyun Kim'' and He is working for ''GTN service company.'' '
-        || 'His contact info is ''gtnservice4@gmail.com''', 0.5, 4000, TRUE, TRUE, 'openai');
+  ('e9fc7e46-a8a5-4fd4-8ba7-af485013e6fa', workspace1_id, 'Chat 1', 'gpt-4-turbo-preview', 'You are an assistant.', 0.5, 4000, TRUE, TRUE, 'openai');
 
   DECLARE
     folder1_id UUID;
@@ -115,14 +80,7 @@ BEGIN
     SELECT id INTO folder1_id FROM folders WHERE name='Chat Folder 1';
 
     INSERT INTO chats (user_id, workspace_id, name, model, prompt, temperature, context_length, include_profile_context, include_workspace_instructions, folder_id, embeddings_provider) VALUES 
-    ('e9fc7e46-a8a5-4fd4-8ba7-af485013e6fa', workspace1_id, 'Chat 4', 'gpt-4-turbo-preview', 'You are a helpful assistant for Korean transaction intermediary. '
-        || 'Match sellers and buyers by checking the current inventory of sellers '
-        || 'and the purchase requests from buyers. Preferred language is Korean. '
-        || 'Try to make response with Korean language except inquiry emails. '
-        || 'Inquiry emails needs to write in seller''s preferred language. e.g. English. '
-        || 'Email contents should be confirm by user before send. User using premium account. '
-        || 'User name is ''Dong-Hyun Kim'' and He is working for ''GTN service company.'' '
-        || 'His contact info is ''gtnservice4@gmail.com''', 0.5, 4000, TRUE, TRUE, folder1_id, 'openai');
+    ('e9fc7e46-a8a5-4fd4-8ba7-af485013e6fa', workspace1_id, 'Chat 4', 'gpt-4-turbo-preview', 'You are an assistant.', 0.5, 4000, TRUE, TRUE, folder1_id, 'openai');
   END;
 
   -- Start data for messages 

@@ -7,7 +7,7 @@ export const getChatById = async (chatId: string) => {
     .select("*")
     .eq("id", chatId)
     .maybeSingle()
-
+  console.log("chats:", chat)
   return chat
 }
 
@@ -17,6 +17,7 @@ export const getChatsByWorkspaceId = async (workspaceId: string) => {
     .select("*")
     .eq("workspace_id", workspaceId)
     .order("created_at", { ascending: false })
+  console.log("chats:", chats)
 
   if (!chats) {
     throw new Error(error.message)
@@ -75,6 +76,34 @@ export const deleteChat = async (chatId: string) => {
 
   if (error) {
     throw new Error(error.message)
+  }
+
+  return true
+}
+
+export const deleteAllChat = async () => {
+  // 먼저 모든 채팅을 가져옵니다.
+  const { data, error: fetchError } = await supabase.from("chats").select("id")
+
+  if (fetchError) {
+    throw new Error(fetchError.message)
+  }
+
+  if (!data || data.length === 0) {
+    return true // 삭제할 채팅이 없습니다.
+  }
+
+  // 가져온 ID를 사용하여 삭제를 수행합니다.
+  const { error: deleteError } = await supabase
+    .from("chats")
+    .delete()
+    .in(
+      "id",
+      data.map(chat => chat.id)
+    )
+
+  if (deleteError) {
+    throw new Error(deleteError.message)
   }
 
   return true

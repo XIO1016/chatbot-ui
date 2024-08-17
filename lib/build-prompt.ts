@@ -2,6 +2,9 @@ import { Tables } from "@/supabase/types"
 import { ChatPayload, MessageImage } from "@/types"
 import { encode } from "gpt-tokenizer"
 import { getBase64FromDataURL, getMediaTypeFromDataURL } from "@/lib/utils"
+import { Email } from "@/types/email"
+
+const { convert } = require("html-to-text")
 
 const buildBasePrompt = (
   prompt: string,
@@ -33,7 +36,8 @@ const buildBasePrompt = (
 export async function buildFinalMessages(
   payload: ChatPayload,
   profile: Tables<"profiles">,
-  chatImages: MessageImage[]
+  chatImages: MessageImage[],
+  email: any = null
 ) {
   const {
     chatSettings,
@@ -43,6 +47,27 @@ export async function buildFinalMessages(
     messageFileItems,
     chatFileItems
   } = payload
+
+  // if(email != null ){
+  //   email = email as Email;
+  //   const extractText = (html) => {
+  //     const element = document.createElement('div');
+  //     element.innerHTML = html;
+  //     return element.textContent || element.innerText || '';
+  //   };
+  //   const subject = email.title;
+  //   const sender = email.sender_email;
+  //   const date = email.date;
+  //   const content = extractText(email.content);
+  //
+  //
+  //   try {
+  //     message.content = "이메일 도우미\n\n" + `TITLE: ${subject}\nEMAIL_SENDER: ${sender}\nEMAIL_DATE: ${date}\nEMAIL_CONTENT:${content}`;
+  //
+  //   } catch (error) {
+  //     console.error('HTML to text conversion failed:', error);
+  //   }
+  // }
 
   const BUILT_PROMPT = buildBasePrompt(
     chatSettings.prompt,
@@ -94,6 +119,7 @@ export async function buildFinalMessages(
 
   for (let i = processedChatMessages.length - 1; i >= 0; i--) {
     const message = processedChatMessages[i].message
+
     const messageTokens = encode(message.content).length
 
     if (messageTokens <= remainingTokens) {
@@ -123,7 +149,7 @@ export async function buildFinalMessages(
 
   finalMessages = finalMessages.map(message => {
     let content
-
+    // console.log(message.content)
     if (message.image_paths.length > 0) {
       content = [
         {

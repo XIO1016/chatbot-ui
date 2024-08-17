@@ -6,8 +6,8 @@ import { createMessageFileItems } from "@/db/message-file-items"
 import { createMessages, updateMessage } from "@/db/messages"
 import { uploadMessageImage } from "@/db/storage/message-images"
 import {
-  buildFinalMessages,
-  adaptMessagesForGoogleGemini
+  adaptMessagesForGoogleGemini,
+  buildFinalMessages
 } from "@/lib/build-prompt"
 import { consumeReadableStream } from "@/lib/consume-stream"
 import { Tables, TablesInsert } from "@/supabase/types"
@@ -86,7 +86,8 @@ export const createTempMessages = (
   b64Images: string[],
   isRegeneration: boolean,
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-  selectedAssistant: Tables<"assistants"> | null
+  selectedAssistant: Tables<"assistants"> | null,
+  onlyOneTypeChat: number = 0
 ) => {
   let tempUserChatMessage: ChatMessage = {
     message: {
@@ -129,11 +130,17 @@ export const createTempMessages = (
     chatMessages[lastMessageIndex].message.content = ""
     newMessages = [...chatMessages]
   } else {
-    newMessages = [
-      ...chatMessages,
-      tempUserChatMessage,
-      tempAssistantChatMessage
-    ]
+    if (onlyOneTypeChat == 0) {
+      newMessages = [
+        ...chatMessages,
+        tempUserChatMessage,
+        tempAssistantChatMessage
+      ]
+    } else if (onlyOneTypeChat == 1) {
+      newMessages = [...chatMessages, tempUserChatMessage]
+    } else if (onlyOneTypeChat == 2) {
+      newMessages = [...chatMessages, tempAssistantChatMessage]
+    }
   }
 
   setChatMessages(newMessages)
@@ -355,7 +362,8 @@ export const handleCreateChat = async (
   newMessageFiles: ChatFile[],
   setSelectedChat: React.Dispatch<React.SetStateAction<Tables<"chats"> | null>>,
   setChats: React.Dispatch<React.SetStateAction<Tables<"chats">[]>>,
-  setChatFiles: React.Dispatch<React.SetStateAction<ChatFile[]>>
+  setChatFiles: React.Dispatch<React.SetStateAction<ChatFile[]>>,
+  chatName: any
 ) => {
   const createdChat = await createChat({
     user_id: profile.user_id,
@@ -365,7 +373,7 @@ export const handleCreateChat = async (
     include_profile_context: chatSettings.includeProfileContext,
     include_workspace_instructions: chatSettings.includeWorkspaceInstructions,
     model: chatSettings.model,
-    name: messageContent.substring(0, 100),
+    name: chatName ?? messageContent.substring(0, 100),
     prompt: chatSettings.prompt,
     temperature: chatSettings.temperature,
     embeddings_provider: chatSettings.embeddingsProvider
@@ -386,7 +394,6 @@ export const handleCreateChat = async (
 
   return createdChat
 }
-
 export const handleCreateMessages = async (
   chatMessages: ChatMessage[],
   currentChat: Tables<"chats">,
@@ -402,7 +409,9 @@ export const handleCreateMessages = async (
     React.SetStateAction<Tables<"file_items">[]>
   >,
   setChatImages: React.Dispatch<React.SetStateAction<MessageImage[]>>,
-  selectedAssistant: Tables<"assistants"> | null
+  selectedAssistant: Tables<"assistants"> | null,
+  isToolChat: boolean = false, // 새로 추가된 인자, default는 false
+  toolExecutionContent: string = "" // 새로 추가된 인자, default는 빈 문자열
 ) => {
   const finalUserMessage: TablesInsert<"messages"> = {
     chat_id: currentChat.id,
@@ -442,10 +451,34 @@ export const handleCreateMessages = async (
 
     setChatMessages(finalChatMessages)
   } else {
-    const createdMessages = await createMessages([
-      finalUserMessage,
-      finalAssistantMessage
-    ])
+    let messagesToCreate = [finalUserMessage, finalAssistantMessage]
+
+    if (isToolChat) {
+      const toolAssistantMessage: TablesInsert<"messages"> = {
+        chat_id: currentChat.id,
+        assistant_id: selectedAssistant?.id || null,
+        user_id: profile.user_id,
+        content: toolExecutionContent,
+        model: modelData.modelId,
+        role: "assistant",
+        sequence_number: chatMessages.length + 1,
+        image_paths: []
+      }
+      finalAssistantMessage.sequence_number = chatMessages.length + 2
+      messagesToCreate = [
+        finalUserMessage,
+        toolAssistantMessage,
+        finalAssistantMessage
+      ]
+    }
+
+    const createdMessages = await createMessages(messagesToCreate)
+    if (
+      !createdMessages ||
+      createdMessages.length !== messagesToCreate.length
+    ) {
+      throw new Error("Failed to create all messages")
+    }
 
     // Upload each image (stored in newMessageImages) for the user message to message_images bucket
     const uploadPromises = newMessageImages
@@ -474,32 +507,63 @@ export const handleCreateMessages = async (
       }))
     ])
 
+    // const updatedMessage = await updateMessage(createdMessages[0].id, {
+    //     ...createdMessages[0],
+    //     image_paths: paths
+    // })
+
+    // const createdMessageFileItems = await createMessageFileItems(
+    //     retrievedFileItems.map(fileItem => {
+    //         return {
+    //             user_id: profile.user_id,
+    //             message_id: createdMessages[1].id,
+    //             file_item_id: fileItem.id
+    //         }
+    //     })
+    // )
     const updatedMessage = await updateMessage(createdMessages[0].id, {
       ...createdMessages[0],
       image_paths: paths
     })
 
     const createdMessageFileItems = await createMessageFileItems(
-      retrievedFileItems.map(fileItem => {
-        return {
-          user_id: profile.user_id,
-          message_id: createdMessages[1].id,
-          file_item_id: fileItem.id
-        }
-      })
+      retrievedFileItems.map(fileItem => ({
+        user_id: profile.user_id,
+        message_id: createdMessages[createdMessages.length - 1].id,
+        file_item_id: fileItem.id
+      }))
     )
-
+    //
+    // finalChatMessages = [
+    //     ...chatMessages,
+    //     {
+    //         message: updatedMessage,
+    //         fileItems: []
+    //     },
+    //     {
+    //         message: createdMessages[1],
+    //         fileItems: retrievedFileItems.map(fileItem => fileItem.id)
+    //     }
+    // ]
     finalChatMessages = [
       ...chatMessages,
       {
         message: updatedMessage,
         fileItems: []
       },
+      ...(isToolChat
+        ? [
+            {
+              message: createdMessages[1],
+              fileItems: []
+            }
+          ]
+        : []),
       {
-        message: createdMessages[1],
+        message: createdMessages[createdMessages.length - 1],
         fileItems: retrievedFileItems.map(fileItem => fileItem.id)
       }
-    ]
+    ] as ChatMessage[] // 여기에 타입 단언 추가
 
     setChatFileItems(prevFileItems => {
       const newFileItems = retrievedFileItems.filter(

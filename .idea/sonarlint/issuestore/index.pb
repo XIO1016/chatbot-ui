@@ -177,9 +177,6 @@ l
 <supabase/migrations/20240125192042_upgrade_openai_models.sql,b/6/b6cd8528098193986231b8221f52c8bf020577e6
 <
 package.json,7/0/7030d0b2f71b999ff89a343de08c414af32fc93a
-:
-
-.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
 C
 lib/build-prompt.ts,4/2/426168fc7797f4fa80506e76ddb57d1240aa750b
 V

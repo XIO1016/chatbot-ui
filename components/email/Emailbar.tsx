@@ -38,7 +38,6 @@ interface EmailRequest {
   before_date?: string
   num_emails?: number
 }
-
 const fetchRecentEmails = async (
   request: EmailRequest,
   page: number,
@@ -65,20 +64,19 @@ const fetchRecentEmails = async (
     )
 
     if (!response.ok) {
-      throw new Error("Failed to fetch recent emails")
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    // FastAPI에서 반환하는 데이터 형식에 맞게 처리
     const data = await response.json()
 
-    if (!Array.isArray(data.emails)) {
+    if (!data || !Array.isArray(data.emails)) {
       throw new Error("Invalid response format")
     }
 
-    return [data.total_emails as number, data.emails as Email[]] // FastAPI에서 반환한 이메일 목록을 반환
+    return [data.total_emails as number, data.emails as Email[]]
   } catch (error) {
     console.error("Error fetching recent emails:", error)
-    return []
+    throw error // 에러를 다시 throw하여 호출자에게 전달
   }
 }
 const Emailbar = () => {
@@ -124,74 +122,81 @@ const Emailbar = () => {
   // 이메일 데이터를 페치하는 함수 (42개씩 가져오기)
   const fetchData = async (
     pageToFetch: number,
-    fetchTotalPages: boolean = false
+    fetchTotalPages: boolean = true,
+    credential = credentials
   ) => {
     if (loading) return
     setLoading(true)
 
-    const {
-      data: { session }
-    } = await supabase.auth.getSession()
-    if (session) {
-      const tmpUserId = session?.user.id ?? ""
-      setUserId(tmpUserId)
+    try {
+      const {
+        data: { session }
+      } = await supabase.auth.getSession()
 
-      const { data } = await supabase
-        .from("email_account")
-        .select("*")
-        .eq("user_id", tmpUserId)
-
-      if (data && data.length > 0) {
-        setCredentials({
-          email: data[0].email,
-          email_key: data[0].email_key,
-          user_id: tmpUserId
-        })
-        setIsSaved(true)
-
-        const emailRequest: EmailRequest = {
-          user_email: data[0].email,
-          user_password: data[0].email_key,
-          search_unread: true,
-          num_emails: 42 // 한 번에 42개 페치
-        }
-
-        try {
-          if (fetchTotalPages) {
-            const [totalEmails, emailsBatch] = await fetchRecentEmails(
-              emailRequest,
-              pageToFetch
-            )
-
-            console.log(totalEmails, emailsBatch)
-            // 총 페이지 계산
-            setTotalPages(Math.ceil(totalEmails / itemsPerPage))
-            // 이메일 데이터 저장
-            setFetchedEmails(prev => ({
-              ...prev,
-              [pageToFetch]: emailsBatch // 페이지별로 저장
-            }))
-            setCurrentEmails(emailsBatch.slice(0, itemsPerPage)) // 처음 14개를 currentEmails로 설정
-          } else {
-            const [totalEmails, emailsBatch] = await fetchRecentEmails(
-              emailRequest,
-              pageToFetch
-            )
-
-            // 이메일 데이터 append 및 currentEmails 업데이트
-            setFetchedEmails(prev => ({
-              ...prev,
-              [pageToFetch]: emailsBatch // 페이지별로 저장
-            }))
-            setCurrentEmails(emailsBatch.slice(0, itemsPerPage)) // 새로운 42개의 첫 14개
+      let emailRequest: EmailRequest
+      if (session) {
+        const tmpUserId = session?.user.id ?? ""
+        setUserId(tmpUserId)
+        const { data } = await supabase
+          .from("email_account")
+          .select("*")
+          .eq("user_id", tmpUserId)
+        if (data && data.length > 0) {
+          setCredentials({
+            email: data[0].email,
+            email_key: data[0].email_key,
+            user_id: tmpUserId
+          })
+          setIsSaved(true)
+          emailRequest = {
+            user_email: data[0].email,
+            user_password: data[0].email_key,
+            search_unread: true,
+            num_emails: 42
           }
-        } catch (error) {
-          console.error("Error fetching emails or total email count:", error)
+        } else {
+          throw new Error("No email account found for user")
         }
+      } else if (credential.email) {
+        setUserId(credential.user_id)
+        emailRequest = {
+          user_email: credential.email,
+          user_password: credential.email_key,
+          search_unread: true,
+          num_emails: 42
+        }
+      } else {
+        throw new Error("No valid credentials found")
       }
-    }
 
-    setLoading(false)
+      const [totalEmails, emailsBatch] = await fetchRecentEmails(
+        emailRequest,
+        pageToFetch
+      )
+
+      if (fetchTotalPages) {
+        setTotalPages(Math.ceil(totalEmails / itemsPerPage))
+      }
+
+      setFetchedEmails(prev => ({
+        ...prev,
+        [pageToFetch]: emailsBatch
+      }))
+
+      if (emailsBatch.length > 0) {
+        setCurrentEmails(emailsBatch.slice(0, itemsPerPage))
+      } else {
+        setCurrentEmails([])
+      }
+
+      console.log(totalEmails, emailsBatch)
+    } catch (error) {
+      console.error("Error fetching emails or total email count:", error)
+      setCurrentEmails([])
+      setTotalPages(0)
+    } finally {
+      setLoading(false)
+    }
   }
   useEffect(() => {
     console.log(totalPages)
@@ -201,22 +206,17 @@ const Emailbar = () => {
   useEffect(() => {
     const startIndex = ((page - 1) % 3) * itemsPerPage
     const endIndex = startIndex + itemsPerPage
-    // console.log(fetchedEmails)
 
-    // 이미 저장된 페이지가 있는지 확인하고 설정, 없으면 데이터 페치
     if (fetchedEmails[Math.ceil(page / 3)]) {
-      setCurrentEmails(
-        fetchedEmails[Math.ceil(page / 3)]?.slice(startIndex, endIndex) || []
-      )
+      const emails = fetchedEmails[Math.ceil(page / 3)] || []
+      setCurrentEmails(emails.slice(startIndex, endIndex))
     } else {
-      fetchData(Math.ceil(page / 3), false).then(() => {
-        setCurrentEmails(
-          fetchedEmails[Math.ceil(page / 3)]?.slice(startIndex, endIndex) || []
-        )
+      fetchData(Math.ceil(page / 3), false).catch(error => {
+        console.error("Failed to fetch data for page:", error)
+        setCurrentEmails([])
       })
     }
   }, [page, fetchedEmails])
-
   // 다음 3페이지 묶음 데이터를 페치
   const fetchNextPageSet = async () => {
     const nextPageSet = Math.ceil((page + 1) / 3)
@@ -284,8 +284,15 @@ const Emailbar = () => {
 
   // 첫 데이터 페치
   useEffect(() => {
-    fetchData(1, true) // 처음 페이지에서는 첫 번째 42개 이메일 페치 및 totalPages 호출
+    fetchData(1, true).catch(error => {
+      console.error("Failed to fetch initial data:", error)
+      // 사용자에게 오류 메시지를 표시하는 로직 추가
+    })
   }, [])
+  const handleRefreshClick = async credential => {
+    await fetchData(1, credential)
+    setPage(1)
+  }
 
   return (
     <EmailbarContext.Provider value={emailBarContextValue}>
@@ -313,10 +320,7 @@ const Emailbar = () => {
         filteredEmails={filteredEmails}
         page={page}
         setPage={setPage}
-        handleRefreshClick={() => {
-          fetchData(1)
-          setPage(1)
-        }}
+        handleRefreshClick={c => handleRefreshClick(c)}
         loading={loading}
         currentEmails={currentEmails}
         goToFirstPage={goToFirstPage}

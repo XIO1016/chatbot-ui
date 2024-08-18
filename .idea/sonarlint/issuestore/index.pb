@@ -165,8 +165,6 @@ J
 app/api/email/send-mail.ts,7/b/7bdc91821f6473c16acf398dc18c2467cc0078f7
 L
 pages/api/email/send-mail.ts,5/b/5b633f978b24c51445a7cc930b191830764c4e88
-I
-supabase/.temp/cli-latest,5/6/561998a1e232140453f61412b427888b79a314af
 A
 package-lock.json,f/a/fa288d1472d29beccb489a676f68739ad365fc47
 D
@@ -221,16 +219,12 @@ U
 %components/email/components/Email.tsx,4/b/4b7b7aa75ff0515ecf26cc43183d18ed54e9c633
 ^
 .components/email/components/SendEmailModal.tsx,9/8/98149033ed9185986cb81d54df34844315b93221
-Z
-*pages/api/assistants/get_product_prompt.ts,5/4/548f445517556346d61370b4da3ba30f01ed907d
 Q
 !lib/server/server-chat-helpers.ts,7/d/7d743533dfe5eb4649e0faed835d647a55f622f5
 M
 app/api/username/get/route.ts,7/9/793982921f554475a41047a09e6e84898672c146
 L
 app/api/chat/openai/route.ts,3/4/345f2b9b5655a4744cf7b62adc9742fa8c6b819a
-H
-app/api/command/route.ts,e/6/e6fd946d1d5c71f0fe2c18fc1a88e0c4e0691c27
 ;
 db/chats.ts,f/f/ff5856cc029d9f8f6923ae88cfdcf3780de02363
 U
@@ -245,8 +239,6 @@ U
 middleware.ts,3/0/306298667dd8f63c95afc94693a7bfe5a20f54f5
 M
 components/setup/api-step.tsx,e/d/ed1aec09a1a94d8cc7ceb5e9b18e9724fff63f4c
-L
-pages/api/assistants/chat.ts,d/8/d81d275bee00f70b1be270b156a3432e45854326
 S
 #components/utility/global-state.tsx,0/e/0e891541b0326419fb95725a479a3242652bea17
 C

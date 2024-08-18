@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const runResponse = await fetch(runUrl, {
             method: 'POST',
             headers: {
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
                 'Content-Type': 'application/json',
                 'OpenAI-Beta': 'assistants=v1',
             },
@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
             const statusResponse = await fetch(statusUrl, {
                 headers: {
-                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
                     'Content-Type': 'application/json',
                     'OpenAI-Beta': 'assistants=v1',
                 },
@@ -80,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         const messagesResponse = await fetch(messagesUrl, {
             headers: {
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
                 'Content-Type': 'application/json',
                 'OpenAI-Beta': 'assistants=v1',
             },

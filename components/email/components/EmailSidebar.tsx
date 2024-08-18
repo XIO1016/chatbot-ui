@@ -26,7 +26,7 @@ interface Props<T> {
   toggleOpen: () => void
   handleCreateItem?: () => void
   handleCreateFolder?: () => void
-  handleRefreshClick: () => void
+  handleRefreshClick: any
   handleDrop?: (e: any) => void
   loading?: boolean
 }
@@ -135,7 +135,7 @@ const Sidebar = <T,>({
 
         console.log(data, error)
       }
-      handleRefreshClick()
+      handleRefreshClick(c)
     }
   }
 

@@ -167,7 +167,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setChatSettings({
       model: (searchParams?.get("model") ||
         workspace?.default_model ||
-        "gpt-4-1106-preview") as LLMID,
+        "gpt-4o") as LLMID,
       prompt:
         workspace?.default_prompt ||
         "You are helpful assistant for Korean transaction intermediary. Match sellers and buyers by checking the current inventory of sellers and the purchase requests from buyers. Preferred language is Korean. Try to make response with Korean language excepts inquiry emails. Inquiry emails needs to write in seller's preferred language. e.g. English. Email contents should be confirm by user before send. User using premium account.",

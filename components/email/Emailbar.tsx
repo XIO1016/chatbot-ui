@@ -261,6 +261,22 @@ const Emailbar = () => {
 
   const renderPageNumbers = () => {
     const pageNumbers = []
+
+    if (totalPages == 0) {
+      pageNumbers.push(
+        <button
+          key={1}
+          className={`mx-1 rounded-full px-3 py-2 ${
+            page === 1 ? "text-blue-400" : "text-gray-300 hover:text-white"
+          }`}
+          onClick={() => setPage(1)}
+        >
+          {1}
+        </button>
+      )
+      return pageNumbers
+    }
+
     const pageRange = 3 // 페이지 세트를 3개씩 묶음
     const currentSet = Math.floor((page - 1) / pageRange) // 현재 페이지가 속한 세트 계산
     const startPage = currentSet * pageRange + 1

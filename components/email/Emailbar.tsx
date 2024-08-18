@@ -75,7 +75,7 @@ const fetchRecentEmails = async (
       throw new Error("Invalid response format")
     }
 
-    return [data.total_emails, data.emails as Email[]] // FastAPI에서 반환한 이메일 목록을 반환
+    return [data.total_emails as number, data.emails as Email[]] // FastAPI에서 반환한 이메일 목록을 반환
   } catch (error) {
     console.error("Error fetching recent emails:", error)
     return []
@@ -162,15 +162,16 @@ const Emailbar = () => {
               emailRequest,
               pageToFetch
             )
+
+            console.log(totalEmails, emailsBatch)
+            // 총 페이지 계산
+            setTotalPages(Math.ceil(totalEmails / itemsPerPage))
             // 이메일 데이터 저장
             setFetchedEmails(prev => ({
               ...prev,
               [pageToFetch]: emailsBatch // 페이지별로 저장
             }))
             setCurrentEmails(emailsBatch.slice(0, itemsPerPage)) // 처음 14개를 currentEmails로 설정
-
-            // 총 페이지 계산
-            setTotalPages(Math.ceil(totalEmails / itemsPerPage))
           } else {
             const [totalEmails, emailsBatch] = await fetchRecentEmails(
               emailRequest,
@@ -192,6 +193,9 @@ const Emailbar = () => {
 
     setLoading(false)
   }
+  useEffect(() => {
+    console.log(totalPages)
+  }, [totalPages])
 
   // 페이지 변경 시 currentEmails 업데이트 (페이지에 맞는 14개의 이메일 설정)
   useEffect(() => {
@@ -310,7 +314,7 @@ const Emailbar = () => {
         page={page}
         setPage={setPage}
         handleRefreshClick={() => {
-          fetchData(page)
+          fetchData(1)
           setPage(1)
         }}
         loading={loading}

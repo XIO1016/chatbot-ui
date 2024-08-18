@@ -4,7 +4,8 @@ import { ChatbotUIContext } from "@/context/context"
 import { getProfileByUserId, updateProfile } from "@/db/profile"
 import {
   getHomeWorkspaceByUserId,
-  getWorkspacesByUserId
+  getWorkspacesByUserId,
+  updateWorkspace
 } from "@/db/workspaces"
 import {
   fetchHostedModels,
@@ -14,7 +15,6 @@ import { supabase } from "@/lib/supabase/browser-client"
 import { TablesUpdate } from "@/supabase/types"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
-import { APIStep } from "../../../components/setup/api-step"
 import { FinishStep } from "../../../components/setup/finish-step"
 import { ProfileStep } from "../../../components/setup/profile-step"
 import {
@@ -125,7 +125,7 @@ export default function SetupPage() {
       has_onboarded: true,
       display_name: displayName,
       username,
-      openai_api_key: openaiAPIKey,
+      openai_api_key: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
       openai_organization_id: openaiOrgID,
       anthropic_api_key: anthropicAPIKey,
       google_gemini_api_key: googleGeminiAPIKey,
@@ -146,7 +146,20 @@ export default function SetupPage() {
     setProfile(updatedProfile)
 
     const workspaces = await getWorkspacesByUserId(profile.user_id)
+
+    // console.log(workspaces)
+
     const homeWorkspace = workspaces.find(w => w.is_home)
+
+    // console.log(homeWorkspace)
+
+    const newWokrspaces = await updateWorkspace(homeWorkspace.id, {
+      ...homeWorkspace,
+      default_model: "gpt-4o",
+      default_prompt:
+        "You are helpful assistant for Korean transaction intermediary. Match sellers and buyers by checking the current inventory of sellers and the purchase requests from buyers. Preferred language is Korean. Try to make response with Korean language excepts inquiry emails. Inquiry emails needs to write in seller's preferred language. e.g. English. Email contents should be confirm by user before send. User using premium account.User name is " +
+        profile.username
+    })
 
     // There will always be a home workspace
     setSelectedWorkspace(homeWorkspace!)
@@ -161,9 +174,9 @@ export default function SetupPage() {
       case 1:
         return (
           <StepContainer
-            stepDescription="Let's create your profile."
+            stepDescription="프로필을 만드세요"
             stepNum={currentStep}
-            stepTitle="Welcome to Chatbot UI"
+            stepTitle="GTN Service"
             onShouldProceed={handleShouldProceed}
             showNextButton={!!(username && usernameAvailable)}
             showBackButton={false}
@@ -180,56 +193,56 @@ export default function SetupPage() {
         )
 
       // API Step
+      // case 2:
+      //   return (
+      //     <StepContainer
+      //       stepDescription="Enter API keys for each service you'd like to use."
+      //       stepNum={currentStep}
+      //       stepTitle="Set API Keys (optional)"
+      //       onShouldProceed={handleShouldProceed}
+      //       showNextButton={true}
+      //       showBackButton={true}
+      //     >
+      //       <APIStep
+      //         openaiAPIKey={openaiAPIKey}
+      //         openaiOrgID={openaiOrgID}
+      //         azureOpenaiAPIKey={azureOpenaiAPIKey}
+      //         azureOpenaiEndpoint={azureOpenaiEndpoint}
+      //         azureOpenai35TurboID={azureOpenai35TurboID}
+      //         azureOpenai45TurboID={azureOpenai45TurboID}
+      //         azureOpenai45VisionID={azureOpenai45VisionID}
+      //         azureOpenaiEmbeddingsID={azureOpenaiEmbeddingsID}
+      //         anthropicAPIKey={anthropicAPIKey}
+      //         googleGeminiAPIKey={googleGeminiAPIKey}
+      //         mistralAPIKey={mistralAPIKey}
+      //         groqAPIKey={groqAPIKey}
+      //         perplexityAPIKey={perplexityAPIKey}
+      //         useAzureOpenai={useAzureOpenai}
+      //         onOpenaiAPIKeyChange={setOpenaiAPIKey}
+      //         onOpenaiOrgIDChange={setOpenaiOrgID}
+      //         onAzureOpenaiAPIKeyChange={setAzureOpenaiAPIKey}
+      //         onAzureOpenaiEndpointChange={setAzureOpenaiEndpoint}
+      //         onAzureOpenai35TurboIDChange={setAzureOpenai35TurboID}
+      //         onAzureOpenai45TurboIDChange={setAzureOpenai45TurboID}
+      //         onAzureOpenai45VisionIDChange={setAzureOpenai45VisionID}
+      //         onAzureOpenaiEmbeddingsIDChange={setAzureOpenaiEmbeddingsID}
+      //         onAnthropicAPIKeyChange={setAnthropicAPIKey}
+      //         onGoogleGeminiAPIKeyChange={setGoogleGeminiAPIKey}
+      //         onMistralAPIKeyChange={setMistralAPIKey}
+      //         onGroqAPIKeyChange={setGroqAPIKey}
+      //         onPerplexityAPIKeyChange={setPerplexityAPIKey}
+      //         onUseAzureOpenaiChange={setUseAzureOpenai}
+      //         openrouterAPIKey={openrouterAPIKey}
+      //         onOpenrouterAPIKeyChange={setOpenrouterAPIKey}
+      //       />
+      //     </StepContainer>
+      //   )
+
+      // Finish Step
       case 2:
         return (
           <StepContainer
-            stepDescription="Enter API keys for each service you'd like to use."
-            stepNum={currentStep}
-            stepTitle="Set API Keys (optional)"
-            onShouldProceed={handleShouldProceed}
-            showNextButton={true}
-            showBackButton={true}
-          >
-            <APIStep
-              openaiAPIKey={openaiAPIKey}
-              openaiOrgID={openaiOrgID}
-              azureOpenaiAPIKey={azureOpenaiAPIKey}
-              azureOpenaiEndpoint={azureOpenaiEndpoint}
-              azureOpenai35TurboID={azureOpenai35TurboID}
-              azureOpenai45TurboID={azureOpenai45TurboID}
-              azureOpenai45VisionID={azureOpenai45VisionID}
-              azureOpenaiEmbeddingsID={azureOpenaiEmbeddingsID}
-              anthropicAPIKey={anthropicAPIKey}
-              googleGeminiAPIKey={googleGeminiAPIKey}
-              mistralAPIKey={mistralAPIKey}
-              groqAPIKey={groqAPIKey}
-              perplexityAPIKey={perplexityAPIKey}
-              useAzureOpenai={useAzureOpenai}
-              onOpenaiAPIKeyChange={setOpenaiAPIKey}
-              onOpenaiOrgIDChange={setOpenaiOrgID}
-              onAzureOpenaiAPIKeyChange={setAzureOpenaiAPIKey}
-              onAzureOpenaiEndpointChange={setAzureOpenaiEndpoint}
-              onAzureOpenai35TurboIDChange={setAzureOpenai35TurboID}
-              onAzureOpenai45TurboIDChange={setAzureOpenai45TurboID}
-              onAzureOpenai45VisionIDChange={setAzureOpenai45VisionID}
-              onAzureOpenaiEmbeddingsIDChange={setAzureOpenaiEmbeddingsID}
-              onAnthropicAPIKeyChange={setAnthropicAPIKey}
-              onGoogleGeminiAPIKeyChange={setGoogleGeminiAPIKey}
-              onMistralAPIKeyChange={setMistralAPIKey}
-              onGroqAPIKeyChange={setGroqAPIKey}
-              onPerplexityAPIKeyChange={setPerplexityAPIKey}
-              onUseAzureOpenaiChange={setUseAzureOpenai}
-              openrouterAPIKey={openrouterAPIKey}
-              onOpenrouterAPIKeyChange={setOpenrouterAPIKey}
-            />
-          </StepContainer>
-        )
-
-      // Finish Step
-      case 3:
-        return (
-          <StepContainer
-            stepDescription="You are all set up!"
+            stepDescription="설정 완료!"
             stepNum={currentStep}
             stepTitle="Setup Complete"
             onShouldProceed={handleShouldProceed}

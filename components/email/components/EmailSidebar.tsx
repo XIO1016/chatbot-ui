@@ -26,7 +26,7 @@ interface Props<T> {
   toggleOpen: () => void
   handleCreateItem?: () => void
   handleCreateFolder?: () => void
-  handleRefreshClick?: () => void
+  handleRefreshClick: () => void
   handleDrop?: (e: any) => void
   loading?: boolean
 }
@@ -111,12 +111,15 @@ const Sidebar = <T,>({
   }, [isEmailPopupOpen])
 
   const handleSaveCredentials = async (email, password) => {
+    console.log(email, password, userId)
     if (userId != "") {
       const c = {
         email: email + "@gmail.com",
         email_key: password,
         user_id: userId
       }
+      console.log(c)
+
       setCredentials(c)
       if (isSaved) {
         const { data, error } = await supabase
@@ -127,11 +130,12 @@ const Sidebar = <T,>({
       } else {
         const { data, error } = await supabase
           .from("email_account")
-          .insert([credentials])
+          .insert([c])
           .select("*")
 
         console.log(data, error)
       }
+      handleRefreshClick()
     }
   }
 

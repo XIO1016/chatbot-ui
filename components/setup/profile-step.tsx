@@ -64,9 +64,7 @@ export const ProfileStep: FC<ProfileStepProps> = ({
       const usernameRegex = /^[a-zA-Z0-9_]+$/
       if (!usernameRegex.test(username)) {
         onUsernameAvailableChange(false)
-        toast.error(
-          "Username must be letters, numbers, or underscores only - no other characters or spacing allowed."
-        )
+        toast.error("영어, 숫자, _ 만 가능합니다")
         return
       }
 
@@ -91,7 +89,7 @@ export const ProfileStep: FC<ProfileStepProps> = ({
     <>
       <div className="space-y-1">
         <div className="flex items-center space-x-2">
-          <Label>Username</Label>
+          <Label>이름</Label>
 
           <div className="text-xs">
             {usernameAvailable ? (
@@ -105,10 +103,11 @@ export const ProfileStep: FC<ProfileStepProps> = ({
         <div className="relative">
           <Input
             className="pr-10"
-            placeholder="username"
+            placeholder="이름"
             value={username}
             onChange={e => {
               onUsernameChange(e.target.value)
+              onDisplayNameChange(e.target.value)
               checkUsernameAvailability(e.target.value)
             }}
             minLength={PROFILE_USERNAME_MIN}
@@ -129,21 +128,21 @@ export const ProfileStep: FC<ProfileStepProps> = ({
         <LimitDisplay used={username.length} limit={PROFILE_USERNAME_MAX} />
       </div>
 
-      <div className="space-y-1">
-        <Label>Chat Display Name</Label>
+      {/*<div className="space-y-1">*/}
+      {/*  <Label>Chat Display Name</Label>*/}
 
-        <Input
-          placeholder="Your Name"
-          value={displayName}
-          onChange={e => onDisplayNameChange(e.target.value)}
-          maxLength={PROFILE_DISPLAY_NAME_MAX}
-        />
+      {/*  <Input*/}
+      {/*    placeholder="Your Name"*/}
+      {/*    value={displayName}*/}
+      {/*    onChange={e => onDisplayNameChange(e.target.value)}*/}
+      {/*    maxLength={PROFILE_DISPLAY_NAME_MAX}*/}
+      {/*  />*/}
 
-        <LimitDisplay
-          used={displayName.length}
-          limit={PROFILE_DISPLAY_NAME_MAX}
-        />
-      </div>
+      {/*  <LimitDisplay*/}
+      {/*    used={displayName.length}*/}
+      {/*    limit={PROFILE_DISPLAY_NAME_MAX}*/}
+      {/*  />*/}
+      {/*</div>*/}
     </>
   )
 }

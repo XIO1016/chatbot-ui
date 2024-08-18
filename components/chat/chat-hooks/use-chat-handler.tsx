@@ -757,7 +757,8 @@ export const useChatHandler = () => {
         prompt:
           "You are helpful assistant for Korean transaction intermediary. Answer in Korean." +
           "Please summarize the key points of the following email related to trade." +
-          " On the first line, write who sent the email and when, and write the subject of the email. \n $[Email Content]\n+" +
+          " On the first line, write who sent the email and when, and write the subject of the email(except greetings)." +
+          " \n $[Email Content]\n+" +
           messageContent2
       }
 

@@ -42,10 +42,13 @@ export default async function Login({
       .single()
 
     if (!homeWorkspace) {
-      throw new Error(error.message)
-    }
+      await supabase.auth.signOut()
 
-    return redirect(`/${homeWorkspace.id}/chat`)
+      // return redirect('/login')
+      // throw new Error(error.message)
+    } else {
+      return redirect(`/${homeWorkspace.id}/chat`)
+    }
   }
 
   const signIn = async (formData: FormData) => {

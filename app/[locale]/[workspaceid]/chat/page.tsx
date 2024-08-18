@@ -36,9 +36,9 @@ export default function ChatPage() {
           {/*  <QuickSettings />*/}
           {/*</div>*/}
 
-          <div className="absolute right-2 top-2">
-            <ChatSettings />
-          </div>
+          {/*<div className="absolute right-2 top-2">*/}
+          {/*  <ChatSettings />*/}
+          {/*</div>*/}
 
           <div className="flex grow flex-col items-center justify-center" />
 

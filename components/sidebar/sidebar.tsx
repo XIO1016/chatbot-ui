@@ -117,9 +117,9 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
 
         <div className="mt-auto">
           <DeleteButton
-            routerPush={() => {
+            routerPush={async () => {
               setChats([])
-              handleNewChat()
+              await handleNewChat()
             }}
           />
         </div>

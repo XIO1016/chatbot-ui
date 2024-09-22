@@ -153,7 +153,7 @@ export default function SetupPage() {
 
     // console.log(homeWorkspace)
 
-    const newWokrspaces = await updateWorkspace(homeWorkspace.id, {
+    const newWokrspaces = await updateWorkspace(homeWorkspace!.id, {
       ...homeWorkspace,
       default_model: "gpt-4o",
       default_prompt:

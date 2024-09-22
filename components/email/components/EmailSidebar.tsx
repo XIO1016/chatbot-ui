@@ -12,25 +12,40 @@ import SettingsSheet from "@/components/email/components/EmailAddressModal"
 import { supabase } from "@/lib/supabase/browser-client"
 import { EmailComponent } from "@/components/email/components/Email"
 import EmailPopup from "@/components/email/components/SendEmailModal"
+import { Email } from "@/types/email"
+import React from "react"
 
 interface Props<T> {
   isOpen: boolean
   addItemButtonTitle: string
-  side: "left" | "right"
+  side: string
   items: T[]
-  itemComponent: ReactNode
-  folderComponent?: ReactNode
-  footerComponent?: ReactNode
+  itemComponent: React.ComponentType<T>
+  folderComponent: React.ComponentType<any>
+  footerComponent: React.ComponentType<any>
   searchTerm: string
-  handleSearchTerm: (searchTerm: string) => void
+  handleSearchTerm: (term: string) => void
   toggleOpen: () => void
-  handleCreateItem?: () => void
-  handleCreateFolder?: () => void
-  handleRefreshClick: any
-  handleDrop?: (e: any) => void
-  loading?: boolean
+  handleCreateItem: () => void
+  handleDrop: (item: T) => void
+  handleRefreshClick: () => void
+  isSaved?: boolean
+  credentials: any
+  setCredentials: (credentials: any) => void
+  userId: string
+  filteredEmails: T[]
+  page: number
+  setPage: (page: number) => void
+  loading: boolean
+  currentEmails: T[]
+  goToFirstPage: () => void
+  goToPreviousPage: () => void
+  goToNextPage: () => void
+  goToLastPage: () => void
+  renderPageNumbers: () => JSX.Element
+  currentPage: number
+  totalPages: number
 }
-
 const Sidebar = <T,>({
   isOpen,
   addItemButtonTitle,
@@ -83,7 +98,8 @@ const Sidebar = <T,>({
   useEffect(() => {
     const intersectionObserver = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
-        setPage(prevPage => prevPage + 1)
+        // setPage((prevPage: number) => prevPage + 1 as number) // Ensure correct type for setPage
+        setPage(page + 1)
       }
     })
     if (loader.current) {
@@ -110,9 +126,9 @@ const Sidebar = <T,>({
     console.log(isEmailPopupOpen)
   }, [isEmailPopupOpen])
 
-  const handleSaveCredentials = async (email, password) => {
+  const handleSaveCredentials = async (email: string, password: string) => {
     console.log(email, password, userId)
-    if (userId != "") {
+    if (userId !== "") {
       const c = {
         email: email + "@gmail.com",
         email_key: password,
@@ -135,7 +151,7 @@ const Sidebar = <T,>({
 
         console.log(data, error)
       }
-      handleRefreshClick(c)
+      handleRefreshClick()
     }
   }
 
@@ -188,8 +204,8 @@ const Sidebar = <T,>({
           <div className="grow overflow-auto">
             {currentEmails.length > 0 ? (
               <div className="pt-2">
-                {currentEmails.map((email, index) => (
-                  <EmailComponent key={index} email={email} />
+                {currentEmails.map((email: T, index: number) => (
+                  <EmailComponent key={index} email={email as Email} />
                 ))}
               </div>
             ) : (
@@ -243,7 +259,7 @@ const Sidebar = <T,>({
           </button>
         </div>
 
-        {footerComponent}
+        {footerComponent && React.createElement(footerComponent)}
       </div>
 
       {/* 모달 및 팝업 영역 */}
@@ -251,7 +267,7 @@ const Sidebar = <T,>({
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
         onSave={handleSaveCredentials}
-        isSaved={isSaved}
+        isSaved={isSaved ?? false} // Ensure isSaved is a boolean
         credentials={credentials}
       />
       <EmailPopup

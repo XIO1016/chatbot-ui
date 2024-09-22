@@ -123,7 +123,7 @@ export const createTempMessages = (
     fileItems: []
   }
 
-  let newMessages = []
+  let newMessages: ChatMessage[] = []
 
   if (isRegeneration) {
     const lastMessageIndex = chatMessages.length - 1
@@ -373,7 +373,10 @@ export const handleCreateChat = async (
     include_profile_context: chatSettings.includeProfileContext,
     include_workspace_instructions: chatSettings.includeWorkspaceInstructions,
     model: chatSettings.model,
-    name: chatName ?? messageContent.substring(0, 100),
+    name:
+      chatName === null || chatName === ""
+        ? messageContent.substring(0, 100)
+        : chatName,
     prompt: chatSettings.prompt,
     temperature: chatSettings.temperature,
     embeddings_provider: chatSettings.embeddingsProvider

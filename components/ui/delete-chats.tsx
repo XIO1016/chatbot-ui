@@ -1,8 +1,8 @@
 import React from "react"
 import { Trash } from "lucide-react"
-import { deleteAllChat } from "@/db/chats" // lucide-react 라이브러리에서 Trash 아이콘을 import
+import { deleteAllChat } from "@/db/chats"
 
-const DeleteButton = ({ routerPush }) => {
+const DeleteButton = ({ routerPush }: { routerPush: () => Promise<void> }) => {
   return (
     <div>
       <div className="mb-2 w-full border-t border-gray-600"></div>

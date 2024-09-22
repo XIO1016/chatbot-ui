@@ -263,7 +263,7 @@ export const useChatHandler = () => {
           created_at: "",
           id: uuidv4(),
           image_paths: b64Images,
-          model: chatSettings.model,
+          model: chatSettings?.model ?? "gpt-4o",
           role: "user",
           sequence_number: chatMessages.length,
           updated_at: "",
@@ -280,7 +280,7 @@ export const useChatHandler = () => {
           created_at: "",
           id: uuidv4(),
           image_paths: [],
-          model: chatSettings.model,
+          model: chatSettings?.model ?? "gpt-4o",
           role: "assistant",
           sequence_number: chatMessages.length + 1,
           updated_at: "",
@@ -331,7 +331,8 @@ export const useChatHandler = () => {
           newMessageFiles,
           setSelectedChat,
           setChats,
-          setChatFiles
+          setChatFiles,
+          ""
         )
       }
 
@@ -368,7 +369,7 @@ export const useChatHandler = () => {
                 created_at: new Date().toISOString(),
                 id: uuidv4(),
                 image_paths: [],
-                model: chatSettings.model,
+                model: chatSettings?.model ?? "gpt-4o",
                 role: "assistant",
                 sequence_number: chatMessages.length + 1,
                 updated_at: "",
@@ -397,7 +398,7 @@ export const useChatHandler = () => {
                 created_at: "",
                 id: uuidv4(),
                 image_paths: [],
-                model: chatSettings.model,
+                model: chatSettings?.model ?? "gpt-4o",
                 role: "assistant",
                 sequence_number: chatMessages.length + 1,
                 updated_at: "",
@@ -638,7 +639,8 @@ export const useChatHandler = () => {
           newMessageFiles,
           setSelectedChat,
           setChats,
-          setChatFiles
+          setChatFiles,
+          ""
         )
       } else {
         const updatedChat = await updateChat(currentChat.id, {
@@ -733,7 +735,7 @@ export const useChatHandler = () => {
 
       const newAbortController = new AbortController()
       setAbortController(newAbortController)
-      const extractText = html => {
+      const extractText = (html: string) => {
         const element = document.createElement("div")
         element.innerHTML = html
         return element.textContent || element.innerText || ""
@@ -936,7 +938,7 @@ export const useChatHandler = () => {
   }
 }
 
-async function chatWithAssistant(userMessage) {
+async function chatWithAssistant(userMessage: string) {
   try {
     // OpenAI 클라이언트 초기화
     const client = new OpenAI({
@@ -980,14 +982,16 @@ async function chatWithAssistant(userMessage) {
     console.log("Assistant response received:", responseData)
 
     return responseData
-  } catch (error) {
-    console.error("Error in chatWithAssistant:", error)
-    if (error.response) {
-      console.error("API response error:", error.response.data)
-    } else if (error.request) {
-      console.error("No response received:", error.request)
-    } else {
-      console.error("Error details:", error.message)
+  } catch (error: unknown) {
+    console.error("chatWithAssistant에서 오류 발생:", error)
+    if (error instanceof Error) {
+      if ("response" in error && error.response) {
+        console.error("API 응답 오류:", (error.response as any).data)
+      } else if ("request" in error && error.request) {
+        console.error("응답을 받지 못했습니다:", error.request)
+      } else {
+        console.error("Error details:", error.message)
+      }
     }
     throw error
   }

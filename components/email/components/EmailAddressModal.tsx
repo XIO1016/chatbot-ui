@@ -16,6 +16,12 @@ const SettingsSheet = ({
   onSave,
   isSaved,
   credentials
+}: {
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  onSave: (email: string, password: string) => void
+  isSaved: boolean
+  credentials: { email: string; email_key: string }
 }) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

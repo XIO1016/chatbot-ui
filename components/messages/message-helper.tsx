@@ -1,16 +1,19 @@
 import React from "react"
 import { MessageMarkdownMemoized } from "@/components/messages/message-markdown-memoized"
 
-const EmailHelperDisplay = ({ content }) => {
+const EmailHelperDisplay = ({ content }: { content: string }) => {
   if (typeof content !== "string") {
-    console.error("Expected string for content, got:", typeof content)
-    return <div>Error: Invalid content format</div>
+    console.error(
+      "예상된 문자열 대신 다음 타입의 content를 받았습니다:",
+      typeof content
+    )
+    return <div>오류: 유효하지 않은 content 형식</div>
   }
 
   const lines = content.split("\n")
   const [title, ...restLines] = lines
 
-  const getField = prefix => {
+  const getField = (prefix: string): string => {
     const line = restLines.find(l => l.startsWith(prefix))
     return line ? line.replace(prefix, "").trim() : "N/A"
   }

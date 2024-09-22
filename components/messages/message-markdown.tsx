@@ -8,10 +8,12 @@ interface MessageMarkdownProps {
   content: string
 }
 
-const EmailBodyRenderer = ({ htmlContent }) => {
-  const [scale, setScale] = useState(0.8)
-  const contentRef = useRef(null)
-  const containerRef = useRef(null)
+const EmailBodyRenderer: React.FC<{ htmlContent: string }> = ({
+  htmlContent
+}) => {
+  const [scale, setScale] = useState<number>(0.8)
+  const contentRef = useRef<HTMLDivElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   const sanitizedHtml = DOMPurify.sanitize(htmlContent)
 

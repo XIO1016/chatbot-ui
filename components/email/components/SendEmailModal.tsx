@@ -12,13 +12,21 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
 
-export default function EmailPopup({ isOpen, onClose, credentials }) {
-  const [to, setTo] = useState("")
-  const [subject, setSubject] = useState("")
-  const [body, setBody] = useState("")
-  const [isSending, setIsSending] = useState(false)
+export default function EmailPopup({
+  isOpen,
+  onClose,
+  credentials
+}: {
+  isOpen: boolean
+  onClose: () => void
+  credentials: { email: string; email_key: string }
+}) {
+  const [to, setTo] = useState<string>("")
+  const [subject, setSubject] = useState<string>("")
+  const [body, setBody] = useState<string>("")
+  const [isSending, setIsSending] = useState<boolean>(false)
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSending(true)
     try {
@@ -48,8 +56,11 @@ export default function EmailPopup({ isOpen, onClose, credentials }) {
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to send email. Please try again.",
+        title: "오류",
+        description:
+          error instanceof Error
+            ? error.message
+            : "이메일 전송에 실패했습니다. 다시 시도해 주세요.",
         variant: "destructive"
       })
     } finally {

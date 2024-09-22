@@ -68,7 +68,7 @@ async function runThread(threadId: string, instruction: string) {
 
     const runRequestBody = JSON.stringify({
         assistant_id: process.env.ASSISTANT_ID,
-        model: 'gpt-4o',
+        model: 'gpt-4',
         instructions: instruction,
         // Include any other parameters if necessary
     });

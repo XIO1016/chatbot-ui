@@ -9,6 +9,7 @@ import DOMPurify from "dompurify"
 interface Props {
   email: Email
   onClose: () => void
+  onChatWithGTN: () => void
   // onUpdatePrompt: (prompt: Prompt) => void;
 }
 

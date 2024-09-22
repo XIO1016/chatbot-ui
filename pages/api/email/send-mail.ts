@@ -1,7 +1,7 @@
 // pages/api/send-email.js
 import nodemailer from 'nodemailer';
 
-export default async function handler(req, res) {
+export default async function handler(req: any, res: any) {
     if (req.method === 'POST') {
         const { to, subject, body, email, email_key } = req.body;
 
@@ -27,11 +27,15 @@ export default async function handler(req, res) {
 
             res.status(200).json({ message: 'Email sent successfully' });
         } catch (error) {
-            console.error('Error sending email:', error);
-            res.status(500).json({ error: 'Failed to send email', details: error.message });
+            console.error('이메일 전송 오류:', error);
+            if (error instanceof Error) {
+                res.status(500).json({ error: '이메일 전송 실패', details: error.message });
+            } else {
+                res.status(500).json({ error: '이메일 전송 실패', details: '알 수 없는 오류 발생' });
+            }
         }
     } else {
         res.setHeader('Allow', ['POST']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
+        res.status(405).end(`메소드 ${req.method}는 허용되지 않습니다`);
     }
 }

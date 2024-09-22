@@ -53,6 +53,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
       default_model: selectedWorkspace.default_model,
       default_prompt: selectedWorkspace.default_prompt,
       default_temperature: selectedWorkspace.default_temperature,
+      default_email: selectedWorkspace.default_email, // 추가된 줄
       description: "",
       embeddings_provider: "openai",
       include_profile_context: selectedWorkspace.include_profile_context,

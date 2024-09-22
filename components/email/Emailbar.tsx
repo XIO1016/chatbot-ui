@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { FC, useContext, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useCreateReducer } from "@/lib/hooks/useCreateReducer"
@@ -18,14 +18,6 @@ import { EmailbarInitialState, initialState } from "./Emailbar.state"
 import EmailSidebar from "@/components/email/components/EmailSidebar"
 import HomeContext from "@/context/homecontext"
 import { supabase } from "@/lib/supabase/browser-client"
-
-interface Email {
-  email_id: string
-  title: string
-  sender_email: string
-  date: string
-  content: string
-}
 
 interface EmailRequest {
   // user_id: string;  // UUID 형식의 문자열
@@ -79,7 +71,13 @@ const fetchRecentEmails = async (
     throw error // 에러를 다시 throw하여 호출자에게 전달
   }
 }
-const Emailbar = () => {
+
+interface EmailbarProps {
+  className?: string
+  style?: React.CSSProperties
+}
+
+const Emailbar: FC<EmailbarProps> = ({ className, style, ...props }) => {
   const { t } = useTranslation("emailbar")
 
   const emailBarContextValue = useCreateReducer<EmailbarInitialState>({
@@ -295,7 +293,7 @@ const Emailbar = () => {
         </button>
       )
     }
-    return pageNumbers
+    return <>{pageNumbers}</>
   }
 
   // 첫 데이터 페치
@@ -305,7 +303,7 @@ const Emailbar = () => {
       // 사용자에게 오류 메시지를 표시하는 로직 추가
     })
   }, [])
-  const handleRefreshClick = async credential => {
+  const handleRefreshClick = async (credential: any) => {
     await fetchData(1, credential)
     setPage(1)
   }
@@ -323,6 +321,10 @@ const Emailbar = () => {
             <div>No emails to display</div>
           )
         }
+        // itemComponent={
+        //   Array.isArray(currentEmails) ? Emails : () => <div>No emails to display</div>
+        // }
+
         items={currentEmails}
         searchTerm={searchTerm}
         handleSearchTerm={(searchTerm: string) =>
@@ -336,14 +338,14 @@ const Emailbar = () => {
         filteredEmails={filteredEmails}
         page={page}
         setPage={setPage}
-        handleRefreshClick={c => handleRefreshClick(c)}
+        handleRefreshClick={() => handleRefreshClick(credentials)} // 수정된 부분
         loading={loading}
         currentEmails={currentEmails}
         goToFirstPage={goToFirstPage}
         goToPreviousPage={goToPreviousPage}
         goToNextPage={goToNextPage}
         goToLastPage={goToLastPage}
-        renderPageNumbers={renderPageNumbers}
+        renderPageNumbers={() => <>{renderPageNumbers()}</>}
         currentPage={page}
         totalPages={totalPages}
       />

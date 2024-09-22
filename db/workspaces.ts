@@ -26,7 +26,13 @@ export const getWorkspaceById = async (workspaceId: string) => {
 
   if (!workspace) {
     redirect(`/`)
-    throw new Error(error.message)
+    throw new Error("NEXT_REDIRECT")
+    // return
+  }
+  if (error) {
+    throw new Error(
+      (error as any)?.message || "알 수 없는 오류가 발생했습니다."
+    )
   }
 
   return workspace

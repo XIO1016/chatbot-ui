@@ -22,7 +22,7 @@
     "db-migrate": "supabase migration up && npm run db-types",
     "db-types": "supabase gen types typescript --local > supabase/types.ts",
     "db-pull": "supabase db remote commit",
-    "db-push": "supabase db push",
+    "db-push": "supabase db push --db-url \"postgres://postgres:gtnpostgres135%40%24%5E@110.10.189.207:5432/postgres\"",
     "test": "jest"
   },
   "dependencies": {

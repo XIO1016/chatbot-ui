@@ -50,8 +50,10 @@ LANGUAGE 'plpgsql'
 SECURITY DEFINER
 AS $$
 DECLARE
-  project_url TEXT := 'https://dicgclqufgaivossjnov.supabase.co';
-  service_role_key TEXT := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpY2djbHF1ZmdhaXZvc3Nqbm92Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxOTU0NDY1OSwiZXhwIjoyMDM1MTIwNjU5fQ.YtEGej84J0dgSxKPaC0ZA-p3wy3Ran_Hnt4f42OYcDs'; -- full access needed for http request to storage
+--   project_url TEXT := 'https://dicgclqufgaivossjnov.supabase.co';
+  project_url TEXT := 'http://110.10.189.207:8100';
+--   service_role_key TEXT := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpY2djbHF1ZmdhaXZvc3Nqbm92Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxOTU0NDY1OSwiZXhwIjoyMDM1MTIwNjU5fQ.YtEGej84J0dgSxKPaC0ZA-p3wy3Ran_Hnt4f42OYcDs'; -- full access needed for http request to storage
+  service_role_key TEXT := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJyb2xlIjogInNlcnZpY2Vfcm9sZSIsCiAgImlzcyI6ICJzdXBhYmFzZSIsCiAgImlhdCI6IDE3MjU1NDg0MDAsCiAgImV4cCI6IDE4ODMzMTQ4MDAKfQ.r42lRGoeIvSy3goqqgi-Ea_nJYDaSDSrUlKPY39CyU8'; -- full access needed for http request to storage
   url TEXT := project_url || '/storage/v1/object/' || bucket || '/' || object;
 BEGIN
   SELECT

@@ -9,6 +9,7 @@ export const runtime: ServerRuntime = "edge"
 
 export async function POST(request: Request) {
   const json = await request.json()
+  console.log(json)
   const { chatSettings, messages } = json as {
     chatSettings: ChatSettings
     messages: any[]

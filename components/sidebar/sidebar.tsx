@@ -13,6 +13,7 @@ import { getHomeWorkspaceByUserId } from "@/db/workspaces"
 import { useParams, useRouter } from "next/navigation"
 import DeleteButton from "@/components/ui/delete-chats"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
+import SignoutButton from "./items/all/signout-button"
 
 interface SidebarProps {
   contentType: ContentType
@@ -70,11 +71,11 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
       value={contentType}
     >
       <div className="flex h-full flex-col p-3">
-        <div className="flex items-center border-b-2 pb-2">
+        {/* <div className="flex items-center border-b-2 pb-2">
           <WorkspaceSwitcher />
 
           <WorkspaceSettings />
-        </div>
+        </div> */}
 
         {(() => {
           switch (contentType) {
@@ -122,6 +123,12 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
               await handleNewChat()
             }}
           />
+
+          <SignoutButton
+            onSignOut={function (): void {
+              throw new Error("Function not implemented.")
+            }}
+          ></SignoutButton>
         </div>
       </div>
     </TabsContent>

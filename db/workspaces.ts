@@ -2,7 +2,10 @@ import { supabase } from "@/lib/supabase/browser-client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 import { redirect } from "next/navigation"
 
-export const getHomeWorkspaceByUserId = async (userId: string) => {
+// Get the home workspace by user ID
+export const getHomeWorkspaceByUserId = async (
+  userId: string
+): Promise<string> => {
   const { data: homeWorkspace, error } = await supabase
     .from("workspaces")
     .select("*")
@@ -10,13 +13,14 @@ export const getHomeWorkspaceByUserId = async (userId: string) => {
     .eq("is_home", true)
     .single()
 
-  if (!homeWorkspace) {
-    throw new Error(error.message)
+  if (error || !homeWorkspace) {
+    throw new Error(error?.message || "Failed to fetch home workspace.")
   }
 
   return homeWorkspace.id
 }
 
+// Get a workspace by ID
 export const getWorkspaceById = async (workspaceId: string) => {
   const { data: workspace, error } = await supabase
     .from("workspaces")
@@ -24,20 +28,18 @@ export const getWorkspaceById = async (workspaceId: string) => {
     .eq("id", workspaceId)
     .single()
 
-  if (!workspace) {
-    redirect(`/`)
-    throw new Error("NEXT_REDIRECT")
-    // return
-  }
   if (error) {
-    throw new Error(
-      (error as any)?.message || "알 수 없는 오류가 발생했습니다."
-    )
+    throw new Error(error.message || "Failed to fetch workspace.")
+  }
+
+  if (!workspace) {
+    redirect(`/`) // Handle redirection in proper contexts
   }
 
   return workspace
 }
 
+// Get all workspaces by user ID
 export const getWorkspacesByUserId = async (userId: string) => {
   const { data: workspaces, error } = await supabase
     .from("workspaces")
@@ -45,13 +47,14 @@ export const getWorkspacesByUserId = async (userId: string) => {
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
 
-  if (!workspaces) {
-    throw new Error(error.message)
+  if (error || !workspaces) {
+    throw new Error(error?.message || "Failed to fetch workspaces.")
   }
 
   return workspaces
 }
 
+// Create a new workspace
 export const createWorkspace = async (
   workspace: TablesInsert<"workspaces">
 ) => {
@@ -61,13 +64,14 @@ export const createWorkspace = async (
     .select("*")
     .single()
 
-  if (error) {
-    throw new Error(error.message)
+  if (error || !createdWorkspace) {
+    throw new Error(error?.message || "Failed to create workspace.")
   }
 
   return createdWorkspace
 }
 
+// Update an existing workspace
 export const updateWorkspace = async (
   workspaceId: string,
   workspace: TablesUpdate<"workspaces">
@@ -79,21 +83,24 @@ export const updateWorkspace = async (
     .select("*")
     .single()
 
-  if (error) {
-    throw new Error(error.message)
+  if (error || !updatedWorkspace) {
+    throw new Error(error?.message || "Failed to update workspace.")
   }
 
   return updatedWorkspace
 }
 
-export const deleteWorkspace = async (workspaceId: string) => {
+// Delete a workspace
+export const deleteWorkspace = async (
+  workspaceId: string
+): Promise<boolean> => {
   const { error } = await supabase
     .from("workspaces")
     .delete()
     .eq("id", workspaceId)
 
   if (error) {
-    throw new Error(error.message)
+    throw new Error(error.message || "Failed to delete workspace.")
   }
 
   return true

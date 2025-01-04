@@ -24,14 +24,12 @@ export async function POST(request: Request) {
     const profile = await getServerProfile()
 
     // Extract query parameter or construct it based on your use case
-    const query = message
 
-    console.log("Query:", query)
-
-    // Call the FastAPI endpoint with the constructed query
+    const query = JSON.stringify(message) // Ensure `chatMessage` is serializable
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_TEST1}/search_product?q=${encodeURIComponent(query)}`
     )
+
     console.log(response)
 
     if (!response.ok) {

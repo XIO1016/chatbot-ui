@@ -756,12 +756,14 @@ export const useChatHandler = () => {
 
       const tmpChatSettings: ChatSettings = {
         ...chatSettings,
+        model: chatSettings.model || "gpt-4o", // Ensure `model` is always defined
+        temperature: chatSettings?.temperature ?? 0.7, // Default temperature
         prompt:
-          "You are helpful assistant for Korean transaction intermediary. Answer in Korean." +
-          "Please summarize the key points of the following email related to trade." +
-          " On the first line, write who sent the email and when, and write the subject of the email(except greetings)." +
-          " \n $[Email Content]\n+" +
-          messageContent2
+          "You are a helpful assistant for Korean transaction intermediary. Answer in Korean." +
+          " Please summarize the key points of the following email related to trade." +
+          " On the first line, write who sent the email and when, and write the subject of the email (except greetings)." +
+          " \n $[Email Content]\n" +
+          messageContent2 // Remove the "+" after `\n`, as it's unnecessary
       }
 
       const modelData = [

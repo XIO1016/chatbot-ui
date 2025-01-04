@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useRef, useState } from "react"
 import {
   Sheet,
@@ -9,6 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai"
+import { signIn, signOut, useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 const SettingsSheet = ({
   isOpen,
@@ -28,6 +31,8 @@ const SettingsSheet = ({
   // const [confirmPassword, setConfirmPassword] = useState('');
   // const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [showPassword, setShowPassword] = useState(false)
+  const { data: session } = useSession()
+  const router = useRouter()
 
   useEffect(() => {
     if (!isSaved) return
@@ -55,6 +60,15 @@ const SettingsSheet = ({
     // setIsSaved(false);
   }
 
+  const handleLogin = async () => {
+    await signIn("google")
+  }
+
+  const handleLogout = async () => {
+    await signOut()
+    window.location.reload() // Replace `router.reload()`
+  }
+
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -65,75 +79,109 @@ const SettingsSheet = ({
             </SheetTitle>
           </SheetHeader>
           <div className="mt-6 space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Label>GMAIL 주소</Label>
+            {!session ? (
+              <div className="flex justify-center">
+                <Button onClick={handleLogin}>Google로 로그인</Button>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center space-x-2">
-                  <Input
-                    className="w-2/3 pr-10"
-                    placeholder="test1234..."
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                  />
-                  <span>@gmail.com</span>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Label>Email</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Input readOnly value={session.user.email ?? ""} />
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Label>GMAIL 비밀번호</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Input
-                  className="pr-10"
-                  placeholder="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                />
-                <button
-                  onClick={toggleShowPassword}
-                  className="rounded px-2 py-1"
-                >
-                  {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
-                </button>
-              </div>
-            </div>
-            {/*{!isSaved && (*/}
-            {/*    <div className="space-y-4">*/}
-            {/*        <div className="flex items-center space-x-2">*/}
-            {/*            <Label>비밀번호 확인</Label>*/}
-            {/*        </div>*/}
-            {/*        <div className="flex items-center space-x-2">*/}
-            {/*            <Input*/}
-            {/*                className="pr-10"*/}
-            {/*                placeholder="비밀번호 확인"*/}
-            {/*                type="password"*/}
-            {/*                value={confirmPassword}*/}
-            {/*                onChange={handleConfirmPasswordChange}*/}
-            {/*            />*/}
-            {/*        </div>*/}
-            {/*        {!passwordsMatch && (*/}
-            {/*            <div className="text-red-500 text-sm">*/}
-            {/*                비밀번호가 일치하지 않습니다.*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*    </div>*/}
-            {/*)}*/}
-            <div className="mt-6 flex justify-end space-x-2">
-              <Button variant="ghost" onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-              <Button ref={buttonRef} onClick={handleSave}>
-                Save
-              </Button>
-            </div>
+                <div className="mt-6 flex justify-end space-x-2">
+                  <Button variant="ghost" onClick={handleLogout}>
+                    로그아웃
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </SheetContent>
     </Sheet>
+    // <Sheet open={isOpen} onOpenChange={onOpenChange}>
+    //   <SheetContent>
+    //     <div className="grow overflow-auto p-4">
+    //       <SheetHeader>
+    //         <SheetTitle className="flex items-center justify-between space-x-2">
+    //           <div>Email Settings</div>
+    //         </SheetTitle>
+    //       </SheetHeader>
+    //       <div className="mt-6 space-y-6">
+    //         <div className="space-y-4">
+    //           <div className="flex items-center space-x-2">
+    //             <Label>GMAIL 주소</Label>
+    //           </div>
+    //           <div className="flex items-center space-x-2">
+    //             <div className="flex items-center space-x-2">
+    //               <Input
+    //                 className="w-2/3 pr-10"
+    //                 placeholder="test1234..."
+    //                 value={email}
+    //                 onChange={e => setEmail(e.target.value)}
+    //               />
+    //               <span>@gmail.com</span>
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <div className="space-y-4">
+    //           <div className="flex items-center space-x-2">
+    //             <Label>GMAIL 비밀번호</Label>
+    //           </div>
+    //           <div className="flex items-center space-x-2">
+    //             <Input
+    //               className="pr-10"
+    //               placeholder="password"
+    //               type={showPassword ? "text" : "password"}
+    //               value={password}
+    //               onChange={e => setPassword(e.target.value)}
+    //             />
+    //             <button
+    //               onClick={toggleShowPassword}
+    //               className="rounded px-2 py-1"
+    //             >
+    //               {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+    //             </button>
+    //           </div>
+    //         </div>
+    //         {/*{!isSaved && (*/}
+    //         {/*    <div className="space-y-4">*/}
+    //         {/*        <div className="flex items-center space-x-2">*/}
+    //         {/*            <Label>비밀번호 확인</Label>*/}
+    //         {/*        </div>*/}
+    //         {/*        <div className="flex items-center space-x-2">*/}
+    //         {/*            <Input*/}
+    //         {/*                className="pr-10"*/}
+    //         {/*                placeholder="비밀번호 확인"*/}
+    //         {/*                type="password"*/}
+    //         {/*                value={confirmPassword}*/}
+    //         {/*                onChange={handleConfirmPasswordChange}*/}
+    //         {/*            />*/}
+    //         {/*        </div>*/}
+    //         {/*        {!passwordsMatch && (*/}
+    //         {/*            <div className="text-red-500 text-sm">*/}
+    //         {/*                비밀번호가 일치하지 않습니다.*/}
+    //         {/*            </div>*/}
+    //         {/*        )}*/}
+    //         {/*    </div>*/}
+    //         {/*)}*/}
+    //         <div className="mt-6 flex justify-end space-x-2">
+    //           <Button variant="ghost" onClick={() => onOpenChange(false)}>
+    //             Cancel
+    //           </Button>
+    //           <Button ref={buttonRef} onClick={handleSave}>
+    //             Save
+    //           </Button>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </SheetContent>
+    // </Sheet>
   )
 }
 

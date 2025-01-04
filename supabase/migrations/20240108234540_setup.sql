@@ -81,3 +81,23 @@ BEGIN
       FROM public.delete_storage_object(bucket_name, object_path) AS result;
 END;
 $$;
+
+
+CREATE OR REPLACE FUNCTION public.check_username_availability(username TEXT)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  username_exists BOOLEAN;
+BEGIN
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.profiles
+    WHERE profiles.username = check_username_availability.username
+  ) INTO username_exists;
+  
+  RETURN NOT username_exists;
+END;
+$$;
